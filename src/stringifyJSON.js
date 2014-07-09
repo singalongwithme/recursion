@@ -4,28 +4,49 @@
 // but you don't so you're going to write it from scratch:
 var stringifyJSON = function(obj) {
   // your code goes here
-  if(typeof obj == "number"){
-    return obj.toString();
+  var string = "";
+  var emptyArr = '[]';
+  var emptyObj = '{}';
+  var bracket = "[";
+  var bracketEnd = "]";
+  var brace = "{";
+  var braceEnd = "}";
+
+  if (obj == null){
+    return '' + obj + '';
   }
-  else if(obj == null){
-    return 'null';
+  if (typeof obj === "boolean"){
+    return '' + obj + '';
   }
-  else if(typeof obj == "boolean"){
-    return obj.toString();
-  }
-  else if(typeof obj == "string"){
+  if (typeof obj === "string"){
     return "\"" + obj + "\"";
   }
-  else if(typeof obj == "object"){
-  var string = "";
-  var bracket = "{";
-  var bracketEnd = "}";
-  for(var key in obj){
-    if(typeof obj[key] !== "string"){
-    string += "\"" + key + "\":" + obj[key] + ",";
-    } else {
-    string += "\"" + key + "\":\"" + obj[key] + "\","; }
+  if (typeof obj === "number"){
+    return obj.toString();
+  }
+
+  if (Array.isArray(obj)){
+    if(!obj.length){
+    return emptyArr;
     }
-  string = string.slice(0,-1);
-  return bracket.concat(string, bracketEnd); }
+    for(var i = 0; i < obj.length; i++){
+      string += stringifyJSON(obj[i]) + ",";
+    }
+    string = string.slice(0, -1);
+    return bracket.concat(string, bracketEnd);
+  }
+
+  if (typeof obj == "object"){
+    if(Object.keys(obj).length === 0){
+      return emptyObj;
+    }
+    for(var key in obj){
+      if(typeof obj[key] == "function" || typeof obj[key] == undefined){
+        return emptyObj;
+      }
+      string += stringifyJSON(key) + ":" + stringifyJSON(obj[key]) + ",";
+      }
+    string = string.slice(0,-1);
+    return brace.concat(string, braceEnd);
+  }
 };
